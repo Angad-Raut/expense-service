@@ -1,0 +1,39 @@
+version: '1.0'
+services:
+  mysql:
+    container_name: mysqlExpenseDB
+    image: mysql
+    volumes:
+      - mysql-expense-data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: expensesDB
+      MYSQL_ROOT_PASSWORD: angad@db
+    networks:
+      - expense-details-network
+
+  expense-service-app:
+    image: expense-details
+    restart: always
+    build: .
+    ports:
+      - 1992:1992
+    depends_on:
+      - mysql
+    environment:
+      MYSQL_HOST: mysqlExpenseDB
+      MYSQL_USER: root
+      MYSQL_PASSWORD: angad@db
+      MYSQL_PORT: 3306
+    networks:
+      - expense-details-network
+
+networks:
+  expense-details-network:
+    driver: bridge
+
+volumes:
+  mysql-expense-data:
+    driver: local
+
