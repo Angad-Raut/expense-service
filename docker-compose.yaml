@@ -1,15 +1,27 @@
 version: '1.0'
 services:
-  mysql:
-    container_name: mysqlExpenseDB
-    image: mysql
+  postgres:
+    container_name: postgresExpenseDB
+    image: postgres
     volumes:
-      - mysql-expense-data:/var/lib/mysql
+      - postgres-expense-data:/var/lib/postgres
     ports:
-      - 3310:3306
+      - 5433:5432
     environment:
-      MYSQL_DATABASE: expensesDB
-      MYSQL_ROOT_PASSWORD: angad@db
+      POSTGRES_DATABASE: expensesDB
+      POSTGRES_PASSWORD: angad@db
+    networks:
+      - expense-details-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: 'angadraut89@gmail.com'
+      PGADMIN_DEFAULT_PASSWORD: angad@db
+    ports:
+      - 16544:80
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
     networks:
       - expense-details-network
 
@@ -20,12 +32,12 @@ services:
     ports:
       - 1992:1992
     depends_on:
-      - mysql
+      - postgres
     environment:
-      MYSQL_HOST: mysqlExpenseDB
-      MYSQL_USER: root
-      MYSQL_PASSWORD: angad@db
-      MYSQL_PORT: 3306
+      POSTGRES_HOST: postgresExpenseDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: angad@db
+      POSTGRES_PORT: 5432
     networks:
       - expense-details-network
 
@@ -34,6 +46,5 @@ networks:
     driver: bridge
 
 volumes:
-  mysql-expense-data:
+  postgres-expense-data:
     driver: local
-
